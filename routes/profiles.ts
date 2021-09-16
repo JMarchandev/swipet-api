@@ -1,0 +1,57 @@
+const {
+  get,
+  getOneById,
+  create,
+  put,
+  remove,
+} = require("../controllers/ProfileController");
+
+import express, { Request, Response } from "express";
+const router = express.Router();
+
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    const profiles = await get();
+    res.json(profiles);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const profile = await getOneById(req.params.id);
+    res.json(profile);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+router.post("/", async (req: Request, res: Response) => {
+  try {
+    const newProfile = await create(req.body);
+    res.json(newProfile);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+router.patch("/:id", async (req: Request, res: Response) => {
+  try {
+    const updatedProfile = await put(req.params.id, req.body);
+    res.json(updatedProfile);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+router.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    const deletedProfile = await remove(req.params.id);
+    res.json({ message: `user ${deletedProfile._id} is temporaly deleted` });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+module.exports = router;
