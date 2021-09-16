@@ -23,7 +23,7 @@ const profileModel = new Mongoose.Schema({
     default: "",
   },
   role: {
-    type: "PET_SITTER" || "PET_OWNER",
+    type: String,
     required: false,
   },
   like: {
