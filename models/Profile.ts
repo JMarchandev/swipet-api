@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 
 const profileModel = new Mongoose.Schema({
-  fireBaseId: {
+  firebaseId: {
     type: String,
     required: false,
   },
@@ -17,6 +17,10 @@ const profileModel = new Mongoose.Schema({
     type: String,
     required: false,
   },
+  email: {
+    type: String,
+    required: false,
+  },
   description: {
     type: String,
     required: false,
@@ -26,13 +30,21 @@ const profileModel = new Mongoose.Schema({
     type: String,
     required: false,
   },
-  like: {
-    type: Array,
+  likes: {
+    type: [Mongoose.Schema.Types.ObjectId],
+    ref: "Profile",
     required: true,
     default: [],
   },
-  unlike: {
-    type: Array,
+  unlikes: {
+    type: [Mongoose.Schema.Types.ObjectId],
+    ref: "Profile",
+    required: true,
+    default: [],
+  },
+  matches: {
+    type: [Mongoose.Schema.Types.ObjectId],
+    ref: "Match",
     required: true,
     default: [],
   },
