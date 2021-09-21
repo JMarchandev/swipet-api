@@ -1,15 +1,9 @@
 const Profile = require("../models/Profile");
 
-const errorLogger = (functionName: string, error: any) => {
-  console.error(`ProfileController: error on ${functionName}`);
-  console.error("Error => " + error);
-};
-
 export type CreateProfileRequest = {
-  fireBaseId: string;
+  uid: string;
   firstName: string;
   lastName: string;
-  name: string;
   email: string;
 };
 
@@ -18,9 +12,16 @@ export type UpdateProfileRequest = {
   lastName?: string;
   name?: string;
   email?: string;
+  uid?: string;
+  match_id?: string;
 };
 
-const get = async () => {
+const errorLogger = (functionName: string, error: any) => {
+  console.error(`ProfileController: error on ${functionName}`);
+  console.error("Error => " + error);
+};
+
+export const getProfile = async () => {
   try {
     const profile = await Profile.find({ deletedDate: null });
     return profile;
@@ -30,7 +31,7 @@ const get = async () => {
   }
 };
 
-const getOneById = async (profileId: string) => {
+export const getProfileById = async (profileId: string) => {
   try {
     const profile = await Profile.findOne({ _id: profileId });
     return profile;
@@ -40,9 +41,19 @@ const getOneById = async (profileId: string) => {
   }
 };
 
-const create = async (req: CreateProfileRequest) => {
+const getProfileByFirebaseId = async (fireBaseId: string) => {
+  try {
+    const profile = await Profile.findOne({ fireBaseId });
+    return profile;
+  } catch (error) {
+    errorLogger("getOneById", error);
+    return error;
+  }
+};
+
+export const createProfile = async (req: CreateProfileRequest) => {
   let request = {
-    fireBaseId: req.fireBaseId,
+    firebaseId: req.uid,
     firstName: req.firstName,
     lastName: req.lastName,
     name: req.firstName + " " + req.lastName,
@@ -59,9 +70,9 @@ const create = async (req: CreateProfileRequest) => {
   }
 };
 
-const put = async (profileId: string, req: UpdateProfileRequest) => {
+export const putProfile = async (profileId: string, req: UpdateProfileRequest) => {
   try {
-    const currentUser = await getOneById(profileId);
+    const currentUser = await getProfileById(profileId);
     if (req.firstName) {
       currentUser.firstName = req.firstName;
       currentUser.name = req.firstName + " " + currentUser.lastName;
@@ -73,6 +84,12 @@ const put = async (profileId: string, req: UpdateProfileRequest) => {
     if (req.email) {
       currentUser.email = req.email;
     }
+    if (req.uid) {
+      currentUser.firebaseId = req.uid;
+    }
+    if (req.match_id) {
+      currentUser.matches = [...currentUser.matches, req.match_id];
+    }
     currentUser.updatedDate = Date.now();
 
     const updatedProfile = await currentUser.save();
@@ -83,9 +100,9 @@ const put = async (profileId: string, req: UpdateProfileRequest) => {
   }
 };
 
-const remove = async (profileId: string) => {
+const removeProfile = async (profileId: string) => {
   try {
-    const currentProfile = await getOneById(profileId);
+    const currentProfile = await getProfileById(profileId);
     currentProfile.deletedDate = Date.now();
 
     const deletedUser = await currentProfile.save();
@@ -97,9 +114,10 @@ const remove = async (profileId: string) => {
 };
 
 module.exports = {
-  get,
-  getOneById,
-  create,
-  put,
-  remove,
+  getProfile,
+  getProfileById,
+  getProfileByFirebaseId,
+  createProfile,
+  putProfile,
+  removeProfile,
 };
