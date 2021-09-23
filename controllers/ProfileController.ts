@@ -1,10 +1,12 @@
+import { randomProfileMapper } from "./../service/ProfilesServices";
 const Profile = require("../models/Profile");
 
 export type CreateProfileRequest = {
-  uid: string;
+  uid?: string;
   firstName: string;
   lastName: string;
   email: string;
+  img_uri?: string;
 };
 
 export type UpdateProfileRequest = {
@@ -14,6 +16,8 @@ export type UpdateProfileRequest = {
   email?: string;
   uid?: string;
   match_id?: string;
+  like_id?: string;
+  unlike_id?: string;
 };
 
 const errorLogger = (functionName: string, error: any) => {
@@ -21,13 +25,34 @@ const errorLogger = (functionName: string, error: any) => {
   console.error("Error => " + error);
 };
 
-export const getProfile = async () => {
+export const getProfiles = async () => {
   try {
     const profile = await Profile.find({ deletedDate: null });
     return profile;
   } catch (error) {
     errorLogger("get", error);
     return error;
+  }
+};
+
+export const getRandomProfiles = async (expectedIds: string[]) => {
+  try {
+    const nbProduct = await Profile.count().exec();
+    const random = Math.floor(Math.random() * nbProduct);
+
+    const randomProfiles = await Profile.find({ deletedDate: null })
+      .skip(random)
+      .limit(10);
+
+    const mappedRandomProfiles = randomProfileMapper(
+      expectedIds,
+      randomProfiles
+    );
+
+    return mappedRandomProfiles;
+  } catch (error) {
+    errorLogger("getRandomProfiles", error);
+    throw error;
   }
 };
 
@@ -41,9 +66,9 @@ export const getProfileById = async (profileId: string) => {
   }
 };
 
-const getProfileByFirebaseId = async (fireBaseId: string) => {
+export const getProfileByFirebaseId = async (firebaseId: string) => {
   try {
-    const profile = await Profile.findOne({ fireBaseId });
+    const profile = await Profile.findOne({ firebaseId });
     return profile;
   } catch (error) {
     errorLogger("getOneById", error);
@@ -53,6 +78,7 @@ const getProfileByFirebaseId = async (fireBaseId: string) => {
 
 export const createProfile = async (req: CreateProfileRequest) => {
   let request = {
+    img_uri: req.img_uri,
     firebaseId: req.uid,
     firstName: req.firstName,
     lastName: req.lastName,
@@ -70,7 +96,10 @@ export const createProfile = async (req: CreateProfileRequest) => {
   }
 };
 
-export const putProfile = async (profileId: string, req: UpdateProfileRequest) => {
+export const putProfile = async (
+  profileId: string,
+  req: UpdateProfileRequest
+) => {
   try {
     const currentUser = await getProfileById(profileId);
     if (req.firstName) {
@@ -90,6 +119,12 @@ export const putProfile = async (profileId: string, req: UpdateProfileRequest) =
     if (req.match_id) {
       currentUser.matches = [...currentUser.matches, req.match_id];
     }
+    if (req.like_id) {
+      currentUser.likes = [...currentUser.likes, req.like_id];
+    }
+    if (req.unlike_id) {
+      currentUser.unlikes = [...currentUser.unlikes, req.unlike_id];
+    }
     currentUser.updatedDate = Date.now();
 
     const updatedProfile = await currentUser.save();
@@ -100,7 +135,7 @@ export const putProfile = async (profileId: string, req: UpdateProfileRequest) =
   }
 };
 
-const removeProfile = async (profileId: string) => {
+export const removeProfile = async (profileId: string) => {
   try {
     const currentProfile = await getProfileById(profileId);
     currentProfile.deletedDate = Date.now();
@@ -114,7 +149,8 @@ const removeProfile = async (profileId: string) => {
 };
 
 module.exports = {
-  getProfile,
+  getProfiles,
+  getRandomProfiles,
   getProfileById,
   getProfileByFirebaseId,
   createProfile,
