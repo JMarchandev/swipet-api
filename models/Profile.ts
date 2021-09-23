@@ -34,7 +34,7 @@ const profileModel = new Mongoose.Schema({
     type: [Mongoose.Schema.Types.ObjectId],
     ref: "Profile",
     required: true,
-    default: [],
+    default: ['614c53dd2fd165ac8e7fb72b'],
   },
   unlikes: {
     type: [Mongoose.Schema.Types.ObjectId],
@@ -42,12 +42,18 @@ const profileModel = new Mongoose.Schema({
     required: true,
     default: [],
   },
-  matches: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Match",
-    required: true,
-    default: [],
+  img_uri: {
+    type: String,
+    required: false,
   },
+  matches: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Match",
+      required: true,
+      default: [],
+    },
+  ],
   creationDate: {
     type: Date,
     required: true,

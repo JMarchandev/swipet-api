@@ -4,7 +4,6 @@ import { createConversation } from "./ConversationController";
 
 type CreateMatchRequest = {
   members: string[];
-  match_id: string;
 };
 
 type UpdateMatchRequest = {
@@ -49,7 +48,7 @@ export const createMatch = async (req: CreateMatchRequest) => {
       conversation_id: newConversation._id,
     });
 
-    return { updatedMatch, newConversation };
+    return { match: updatedMatch, conversation: newConversation };
   } catch (error) {
     errorLogger("createMatch", error);
     return error;

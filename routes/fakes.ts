@@ -8,15 +8,17 @@ const faker = require("faker");
 router.post("/", async (req: Request, res: Response) => {
   try {
     const users = [];
-    for (let index = 0; index < 1; index++) {
+    for (let index = 0; index < 20; index++) {
       const firstName = faker.name.firstName();
       const lastName = faker.name.lastName();
       const request = {
+        img_uri: faker.image.cats(),
         firstName,
         lastName,
         email: faker.internet.email(),
         uid: "test",
-      };      
+      }; 
+      
       const newUser = await createProfile(request);
       users.push(newUser);
     }
