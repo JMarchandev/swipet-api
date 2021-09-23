@@ -42,6 +42,10 @@ const profileModel = new Mongoose.Schema({
     required: true,
     default: [],
   },
+  img_uri: {
+    type: String,
+    required: false,
+  },
   matches: {
     type: [Mongoose.Schema.Types.ObjectId],
     ref: "Match",

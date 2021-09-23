@@ -1,19 +1,29 @@
-const {
-  getProfile,
+import {
+  getProfiles,
+  getRandomProfiles,
   getProfileById,
   getProfileByFirebaseId,
   createProfile,
   putProfile,
   removeProfile,
-} = require("../controllers/ProfileController");
+} from "../controllers/ProfileController";
 
 import express, { Request, Response } from "express";
 const router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const profiles = await getProfile();
+    const profiles = await getProfiles();
     res.json(profiles);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.post("/random", async (req: Request, res: Response) => {
+  try {
+    const randomProfiles = await getRandomProfiles(req.body.expectedIds);
+    res.json(randomProfiles);
   } catch (error) {
     res.status(500).json(error);
   }
