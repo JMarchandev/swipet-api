@@ -1,11 +1,13 @@
 import Mongoose from "mongoose";
 
 const matchModel = new Mongoose.Schema({
-  members: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Profile",
-    required: true,
-  },
+  members: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+      required: true,
+    },
+  ],
   conversation_id: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "Conversation",
@@ -26,4 +28,4 @@ const matchModel = new Mongoose.Schema({
   },
 });
 
-module.exports = Mongoose.model("Match", matchModel);
+module.exports = Mongoose.model("Match", matchModel, "matches");

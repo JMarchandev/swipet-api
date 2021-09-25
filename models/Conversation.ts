@@ -1,18 +1,22 @@
 import Mongoose from "mongoose";
 
 const conversationModel = new Mongoose.Schema({
-  members: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Profile",
-    required: true,
-    default: [],
-  },
-  messages: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Message",
-    required: true,
-    default: [],
-  },
+  members: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+      required: true,
+      default: [],
+    },
+  ],
+  messages: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      required: true,
+      default: [],
+    },
+  ],
   match_id: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "Match",

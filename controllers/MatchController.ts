@@ -55,6 +55,17 @@ export const createMatch = async (req: CreateMatchRequest) => {
   }
 };
 
+export const getMatchesByProfileId = async (profileId: string) => {
+  try {
+    const currentUser = await getProfileById(profileId);
+    const { matches } = await currentUser.populate({ path: "matches.members", select: "firstName lastName" });
+    return matches;
+  } catch (error) {
+    errorLogger("getMatchesByProfileId", error);
+    throw error;
+  }
+};
+
 export const updateMatch = async (
   match_id: string,
   req: UpdateMatchRequest
@@ -67,7 +78,9 @@ export const updateMatch = async (
     currentMatch.updatedDate = Date.now();
 
     const updatedMatch = await currentMatch.save();
-    return updatedMatch;
+    const populatedMatch = await updatedMatch.populate("members");
+
+    return populatedMatch;
   } catch (error) {
     errorLogger("updateMatch", error);
     return error;
@@ -76,4 +89,5 @@ export const updateMatch = async (
 
 module.exports = {
   createMatch,
+  getMatchesByProfileId,
 };

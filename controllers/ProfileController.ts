@@ -58,11 +58,12 @@ export const getRandomProfiles = async (expectedIds: string[]) => {
 
 export const getProfileById = async (profileId: string) => {
   try {
-    const profile = await Profile.findOne({ _id: profileId }); //.populate("Match");
+    const profile = await Profile.findOne({ _id: profileId })
+      .populate("matches")
     return profile;
   } catch (error) {
     errorLogger("getOneById", error);
-    return error;
+    throw error;
   }
 };
 
