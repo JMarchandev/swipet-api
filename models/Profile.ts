@@ -30,28 +30,34 @@ const profileModel = new Mongoose.Schema({
     type: String,
     required: false,
   },
-  likes: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Profile",
-    required: true,
-    default: [],
-  },
-  unlikes: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Profile",
-    required: true,
-    default: [],
-  },
+  likes: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+      required: true,
+      default: ["614c53dd2fd165ac8e7fb72b"],
+    },
+  ],
+  unlikes: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Profile",
+      required: true,
+      default: [],
+    },
+  ],
   img_uri: {
     type: String,
     required: false,
   },
-  matches: {
-    type: [Mongoose.Schema.Types.ObjectId],
-    ref: "Match",
-    required: true,
-    default: [],
-  },
+  matches: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Match",
+      required: true,
+      default: [],
+    },
+  ],
   creationDate: {
     type: Date,
     required: true,
@@ -67,4 +73,4 @@ const profileModel = new Mongoose.Schema({
   },
 });
 
-module.exports = Mongoose.model("Profile", profileModel);
+module.exports = Mongoose.model("Profile", profileModel, 'profiles');

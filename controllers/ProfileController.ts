@@ -58,11 +58,12 @@ export const getRandomProfiles = async (expectedIds: string[]) => {
 
 export const getProfileById = async (profileId: string) => {
   try {
-    const profile = await Profile.findOne({ _id: profileId });
+    const profile = await Profile.findOne({ _id: profileId })
+      .populate("matches")
     return profile;
   } catch (error) {
     errorLogger("getOneById", error);
-    return error;
+    throw error;
   }
 };
 
@@ -79,7 +80,6 @@ export const getProfileByFirebaseId = async (firebaseId: string) => {
 export const createProfile = async (req: CreateProfileRequest) => {
   let request = {
     img_uri: req.img_uri,
-    firebaseId: req.uid,
     firstName: req.firstName,
     lastName: req.lastName,
     name: req.firstName + " " + req.lastName,
