@@ -1,12 +1,12 @@
-const { createConversation } = require("../controllers/ConversationController");
+import { getConversationById } from "../controllers/ConversationController";
 
 import express, { Request, Response } from "express";
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const newConversation = await createConversation(req.body);
-    res.json(newConversation);
+    const conversation = await getConversationById(req.params.id);
+    res.json(conversation);
   } catch (error) {
     res.status(400).json(error);
   }
