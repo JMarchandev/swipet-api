@@ -61,8 +61,8 @@ app.use("/profiles", profileRouter);
 const conversationRouter = require("../routes/conversations");
 app.use("/conversations", conversationRouter);
 
-// const messageRouter = require("../routes/messages");
-// app.use("/messages", messageRouter);
+const messageRouter = require("../routes/messages");
+app.use("/messages", messageRouter);
 
 const matchRouter = require("../routes/matches");
 app.use("/matches", matchRouter);
