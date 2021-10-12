@@ -1,4 +1,4 @@
-import { getConversationById, putConversation } from "./ConversationController";
+import { putConversation } from "./ConversationController";
 
 const Message = require("../models/Message");
 

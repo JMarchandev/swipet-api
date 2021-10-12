@@ -6,6 +6,11 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 
+import { createServer } from "http";
+import { Server } from "socket.io";
+
+import * as MessageService from "../service/socket/message";
+
 dotenv.config();
 
 /**
@@ -25,6 +30,14 @@ const MONGO_CLUSTER = process.env.MONGO_CLUSTER;
  */
 const app = express();
 
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
 app.use(cors());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -39,11 +52,40 @@ app.use((req, res, next) => {
   );
   next();
 });
+
 app.use(express.json());
 
 const mongoConfig = {
   useNewUrlParser: true,
 };
+
+// const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
+io.on("connection", (socket) => {
+  socket.on("join", ({ id, room }: { id: string; room: string }) => {
+    console.log("user " + id + " join room :" + room);
+
+    socket.join(room);
+  });
+
+  socket.on("sendMessage", async ({ room, message, sender }, callback) => {
+    console.log(room, message, sender);
+
+    try {
+      const newMessage = await MessageService.createMessage(
+        message,
+        sender,
+        room
+      );
+      io.to(room).emit("message", { message: newMessage });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnect");
+  });
+});
 
 mongoose.connect(
   `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_CLUSTER}`,
@@ -73,6 +115,6 @@ app.use("/fakes", fakeRouter);
 /**
  * Server Activation
  */
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
