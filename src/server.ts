@@ -33,7 +33,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://app-swipet.netlify.app/auth",
     methods: ["GET", "POST"],
   },
 });
