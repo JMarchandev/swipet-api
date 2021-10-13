@@ -63,6 +63,10 @@ const mongoConfig = {
 
 // const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 io.on("connection", (socket) => {
+  socket.on("connect_error", (err) => {
+    console.log(`connect_error due to ${err.message}`);
+  });
+
   socket.on("join", ({ id, room }: { id: string; room: string }) => {
     console.log("user " + id + " join room :" + room);
 
