@@ -33,12 +33,17 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://app-swipet.netlify.app",
+    origin: "https://app-swipet.netlify.app/",
     methods: ["GET", "POST"],
   },
 });
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://app-swipet.netlify.app/",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
 // app.use((req, res, next) => {
 //   res.header("Access-Control-Allow-Origin", "*");
 //   res.header("Access-Control-Allow-Credentials", 'true');
