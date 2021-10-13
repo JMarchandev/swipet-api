@@ -41,6 +41,7 @@ const io = new Server(httpServer, {
 const corsOptions = {
   origin: ["https://app-swipet.netlify.app", "http://localhost:3000"],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -52,7 +53,7 @@ const mongoConfig = {
 };
 
 io.on("connection", (socket) => {
-  console.log('somewone coming')
+  console.log("somewone coming");
   socket.on("connect_error", (err) => {
     console.log(`connect_error due to ${err.message}`);
   });
