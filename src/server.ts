@@ -33,13 +33,13 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://app-swipet.netlify.app",
+    origin: ["https://app-swipet.netlify.app", "http://localhost:3000"],
     methods: ["GET", "POST"],
   },
 });
 
 const corsOptions = {
-  origin: "https://app-swipet.netlify.app",
+  origin: ["https://app-swipet.netlify.app", "http://localhost:3000"],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
