@@ -2,18 +2,17 @@
   "name": "pet-api",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "server.js",
   "compilerOptions": {
     "include": [
-      "src/**/*.ts"
+      "src/*.ts"
     ],
     "exclude": [
       "node_modules"
     ]
   },
   "scripts": {
-    "start": "ts-node src/server.ts",
+    "start": "ts-node ./src/server.ts",
     "postinstall": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/server.ts"
