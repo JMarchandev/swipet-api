@@ -36,6 +36,7 @@ const io = new Server(httpServer, {
     origin: ["https://app-swipet.netlify.app", "http://localhost:3000"],
     methods: ["GET", "POST"],
   },
+  transports: ["websocket", "polling"],
 });
 
 const corsOptions = {
