@@ -1,4 +1,7 @@
-import { randomProfileMapper } from "./../service/ProfilesServices";
+import {
+  randomProfileMapper,
+  generateJWT,
+} from "./../service/ProfilesServices";
 const Profile = require("../models/Profile");
 
 export type CreateProfileRequest = {
@@ -58,8 +61,9 @@ export const getRandomProfiles = async (expectedIds: string[]) => {
 
 export const getProfileById = async (profileId: string) => {
   try {
-    const profile = await Profile.findOne({ _id: profileId })
-      .populate("matches")
+    const profile = await Profile.findOne({ _id: profileId }).populate(
+      "matches"
+    );
     return profile;
   } catch (error) {
     errorLogger("getOneById", error);
@@ -70,7 +74,8 @@ export const getProfileById = async (profileId: string) => {
 export const getProfileByFirebaseId = async (firebaseId: string) => {
   try {
     const profile = await Profile.findOne({ firebaseId });
-    return profile;
+    const jwt = generateJWT(profile._id);
+    return { profile, jwt };
   } catch (error) {
     errorLogger("getOneById", error);
     return error;
@@ -89,7 +94,9 @@ export const createProfile = async (req: CreateProfileRequest) => {
   const newProfile = await new Profile(request);
   try {
     const createdProfile = await newProfile.save();
-    return createdProfile;
+    const jwt = generateJWT(createdProfile._id);
+    
+    return { createdProfile, jwt };
   } catch (error) {
     errorLogger("create", error);
     return error;

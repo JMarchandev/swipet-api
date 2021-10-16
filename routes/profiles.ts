@@ -49,8 +49,8 @@ router.get("/firebase/:id", async (req: Request, res: Response) => {
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const newProfile = await createProfile(req.body);
-    res.json(newProfile);
+    const { createdProfile, jwt }: any = await createProfile(req.body);
+    res.json({ profile: createdProfile, jwt });
   } catch (error) {
     res.status(400).json(error);
   }

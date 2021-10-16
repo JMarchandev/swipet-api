@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+const config = require("../config.json");
+
 type ProfileType = {
   _id: string;
   name: string;
@@ -18,4 +21,12 @@ export const randomProfileMapper = (
   profiles: ProfileType[]
 ) => {
   return profiles.filter((profile) => !expectedIds.includes(profile._id));
+};
+
+export const generateJWT = (userId: string) => {
+  const token = jwt.sign({ sub: userId }, config.secret, {
+    expiresIn: "7d",
+  });
+
+  return token;
 };

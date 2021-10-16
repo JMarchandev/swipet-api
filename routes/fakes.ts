@@ -19,9 +19,9 @@ router.post("/", async (req: Request, res: Response) => {
         uid: "test",
       };
 
-      const newUser = await createProfile(request);
+      const { createdProfile, jwt }: any = await createProfile(request);
 
-      const updatedUser = await putProfile(newUser._id, {
+      const updatedUser = await putProfile(createdProfile._id, {
         like_id: "614c97a84f44c180202feea8",
       });
       users.push(updatedUser);

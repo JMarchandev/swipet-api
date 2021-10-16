@@ -11,6 +11,9 @@ import { Server } from "socket.io";
 
 import * as MessageService from "../service/socket/message";
 
+const jwt = require("../service/jwt");
+const errorHandler = require("../service/error-handler");
+
 dotenv.config();
 
 /**
@@ -33,17 +36,27 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://app-swipet.netlify.app", "http://localhost:3000"],
+    origin: [
+      "https://app-swipet.netlify.app",
+      "http://localhost:3000",
+      "http://192.168.1.43:3000",
+    ],
     methods: ["GET", "POST"],
   },
 });
 
 const corsOptions = {
-  origin: ["https://app-swipet.netlify.app", "http://localhost:3000"],
+  origin: [
+    "https://app-swipet.netlify.app",
+    "http://localhost:3000",
+    "http://192.168.1.43:3000",
+  ],
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 app.use(cors(corsOptions));
+
+app.use(jwt());
 
 app.use(express.json());
 
@@ -107,6 +120,8 @@ app.use("/matches", matchRouter);
 
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);
+
+app.use(errorHandler);
 
 /**
  * Server Activation
