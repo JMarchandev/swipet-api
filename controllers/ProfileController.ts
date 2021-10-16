@@ -89,13 +89,14 @@ export const createProfile = async (req: CreateProfileRequest) => {
     lastName: req.lastName,
     name: req.firstName + " " + req.lastName,
     email: req.email,
+    firebaseId: req.uid ? req.uid : undefined,
   };
 
   const newProfile = await new Profile(request);
   try {
     const createdProfile = await newProfile.save();
     const jwt = generateJWT(createdProfile._id);
-    
+
     return { createdProfile, jwt };
   } catch (error) {
     errorLogger("create", error);
