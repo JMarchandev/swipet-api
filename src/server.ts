@@ -27,37 +27,30 @@ const PORT: number = parseInt(process.env.PORT);
 const MONGO_USER = process.env.MONGO_USER;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_CLUSTER = process.env.MONGO_CLUSTER;
-
+const NODE_ORIGINS_LIST = process.env.NODE_ORIGINS_LIST
+  ? process.env.NODE_ORIGINS_LIST.split(" ")
+  : [];
+  
 /**
  *  App Configuration
  */
 const app = express();
-
 const httpServer = createServer(app);
+
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "https://app-swipet.netlify.app",
-      "http://localhost:3000",
-      "http://192.168.1.43:3000",
-    ],
+    origin: NODE_ORIGINS_LIST,
     methods: ["GET", "POST"],
   },
 });
 
-const corsOptions = {
-  origin: [
-    "https://app-swipet.netlify.app",
-    "http://localhost:3000",
-    "http://192.168.1.43:3000",
-  ],
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-
-app.use(cors(corsOptions));
-
+app.use(
+  cors({
+    origin: NODE_ORIGINS_LIST,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(jwt());
-
 app.use(express.json());
 
 const mongoConfig = {

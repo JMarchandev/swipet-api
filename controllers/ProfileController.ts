@@ -1,7 +1,4 @@
-import {
-  randomProfileMapper,
-  generateJWT,
-} from "./../service/ProfilesServices";
+import { generateJWT, getNbRandomProfile } from "./../service/ProfilesServices";
 const Profile = require("../models/Profile");
 
 export type CreateProfileRequest = {
@@ -40,19 +37,9 @@ export const getProfiles = async () => {
 
 export const getRandomProfiles = async (expectedIds: string[]) => {
   try {
-    const nbProduct = await Profile.count().exec();
-    const random = Math.floor(Math.random() * nbProduct);
-
-    const randomProfiles = await Profile.find({ deletedDate: null })
-      .skip(random)
-      .limit(10);
-
-    const mappedRandomProfiles = randomProfileMapper(
-      expectedIds,
-      randomProfiles
-    );
-
-    return mappedRandomProfiles;
+    const randomProfiles = await getNbRandomProfile(10, expectedIds);
+    
+    return randomProfiles;
   } catch (error) {
     errorLogger("getRandomProfiles", error);
     throw error;
