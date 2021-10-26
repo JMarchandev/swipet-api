@@ -21,6 +21,8 @@ export type UpdateProfileRequest = {
   match_id?: string;
   like_id?: string;
   unlike_id?: string;
+  isLookingForAnimal?: boolean;
+  isLookingPetSitter?: boolean;
 };
 
 const errorLogger = (functionName: string, error: any) => {
@@ -133,6 +135,13 @@ export const putProfile = async (
     if (req.unlike_id) {
       currentUser.unlikes = [...currentUser.unlikes, req.unlike_id];
     }
+    if (req.isLookingForAnimal) {
+      currentUser.isLookingForAnimal = req.isLookingForAnimal;
+    }
+    if (req.isLookingPetSitter) {
+      currentUser.isLookingPetSitter = req.isLookingPetSitter;
+    }
+
     currentUser.updatedDate = Date.now();
 
     const updatedProfile = await currentUser.save();

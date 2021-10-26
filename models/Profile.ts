@@ -58,6 +58,16 @@ const profileModel = new Mongoose.Schema({
       default: [],
     },
   ],
+  isLookingForAnimal: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  isLookingPetSitter: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   creationDate: {
     type: Date,
     required: true,
@@ -73,4 +83,4 @@ const profileModel = new Mongoose.Schema({
   },
 });
 
-module.exports = Mongoose.model("Profile", profileModel, 'profiles');
+module.exports = Mongoose.model("Profile", profileModel, "profiles");

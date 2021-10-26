@@ -27,6 +27,10 @@ const PORT: number = parseInt(process.env.PORT);
 const MONGO_USER = process.env.MONGO_USER;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_CLUSTER = process.env.MONGO_CLUSTER;
+const NODE_ORIGINS_LIST = process.env.NODE_ORIGINS_LIST
+  ? process.env.NODE_ORIGINS_LIST.split(" ")
+  : [];
+const LOCAL_MONGO_CLUSTER = process.env.LOCAL_MONGO_CLUSTER;
 
 /**
  *  App Configuration
@@ -36,21 +40,13 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "https://app-swipet.netlify.app",
-      "http://localhost:3000",
-      "http://192.168.1.43:3000",
-    ],
+    origin: NODE_ORIGINS_LIST,
     methods: ["GET", "POST"],
   },
 });
 
 const corsOptions = {
-  origin: [
-    "https://app-swipet.netlify.app",
-    "http://localhost:3000",
-    "http://192.168.1.43:3000",
-  ],
+  origin: NODE_ORIGINS_LIST,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -98,6 +94,7 @@ io.on("connection", (socket) => {
 
 mongoose.connect(
   `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_CLUSTER}`,
+  // "mongodb://127.0.0.1:27017",
   // @ts-ignore
   mongoConfig
 );
@@ -120,6 +117,10 @@ app.use("/matches", matchRouter);
 
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);
+
+app.use("/", (req, res) => {
+  res.json("alive");
+});
 
 app.use(errorHandler);
 
