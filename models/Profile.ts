@@ -59,12 +59,12 @@ const profileModel = new Mongoose.Schema({
     },
   ],
   isLookingForAnimal: {
-    type: Boolean,
+    type: Mongoose.Schema.Types.Boolean,
     required: false,
     default: false,
   },
-  isLookingPetSitter: {
-    type: Boolean,
+  isLookingForPetSitter: {
+    type: Mongoose.Schema.Types.Boolean,
     required: false,
     default: false,
   },
