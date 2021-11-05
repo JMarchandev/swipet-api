@@ -50,6 +50,16 @@ const profileModel = new Mongoose.Schema({
     type: String,
     required: false,
   },
+  profileImage: {
+    croppedImage: {
+      type: String,
+      required: false,
+    },
+    defaultSource: {
+      type: String,
+      required: false,
+    },
+  },
   matches: [
     {
       type: Mongoose.Schema.Types.ObjectId,

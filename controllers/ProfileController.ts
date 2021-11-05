@@ -20,6 +20,7 @@ export type UpdateProfileRequest = {
   unlike_id?: string;
   isLookingForAnimal?: boolean;
   isLookingForPetSitter?: boolean;
+  description?: string;
 };
 
 const errorLogger = (functionName: string, error: any) => {
@@ -93,6 +94,29 @@ export const createProfile = async (req: CreateProfileRequest) => {
   }
 };
 
+export const updateProfileImage = async (
+  userId: string,
+  url: string,
+  file: any,
+  keyToUpdate: string
+) => {
+  try {
+    const currentUser = await getProfileById(userId);
+    currentUser.profileImage = {
+      ...currentUser.profileImage,
+      [keyToUpdate]: url + "/" + file.path,
+    };
+    currentUser.updatedDate = Date.now();
+
+    const updatedProfile = await currentUser.save();
+
+    return updatedProfile.profileImage[keyToUpdate];
+  } catch (error) {
+    errorLogger("updateProfileImage", error);
+    return error;
+  }
+};
+
 export const putProfile = async (
   profileId: string,
   req: UpdateProfileRequest
@@ -109,6 +133,9 @@ export const putProfile = async (
     }
     if (req.email) {
       currentUser.email = req.email;
+    }
+    if (req.description) {
+      currentUser.description = req.description;
     }
     if (req.uid) {
       currentUser.firebaseId = req.uid;
@@ -159,4 +186,5 @@ module.exports = {
   createProfile,
   putProfile,
   removeProfile,
+  updateProfileImage,
 };

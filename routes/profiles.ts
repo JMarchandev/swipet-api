@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 import {
   getProfiles,
   getRandomProfiles,
@@ -5,11 +8,56 @@ import {
   getProfileByFirebaseId,
   createProfile,
   putProfile,
+  updateProfileImage,
   removeProfile,
 } from "../controllers/ProfileController";
 
+import multer from "multer";
 import express, { Request, Response } from "express";
 const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const { id } = req.params;
+    const dir = `./static/${id}`;
+
+    if (!fs.existsSync(dir)) {
+      return fs.mkdir(dir, (error) => cb(error, dir));
+    }
+
+    fs.readdir(dir, (err, files) => {
+      if (err) throw err;
+
+      for (const currentFile of files) {
+        if (currentFile.split("_")[0] === file.fieldname) {
+          fs.unlink(path.join(dir, currentFile), (err) => {
+            if (err) throw err;
+          });
+        }
+      }
+    });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "_" + req.params.id + "_" + Date.now());
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+    }
+  },
+});
 
 router.get("/", async (req: Request, res: Response) => {
   try {
@@ -55,6 +103,50 @@ router.post("/", async (req: Request, res: Response) => {
     res.status(400).json(error);
   }
 });
+
+router.patch(
+  "/:id/cropped-image",
+  upload.single("croppedImage"),
+  async (req: Request, res: Response) => {
+    const file = req.file;
+    const url = req.protocol + "://" + req.get("host");
+
+    try {
+      const updatedProfileImage = await updateProfileImage(
+        req.params.id,
+        url,
+        file,
+        "croppedImage"
+      );
+
+      res.json(updatedProfileImage);
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  }
+);
+
+router.patch(
+  "/:id/default-image",
+  upload.single("defaultSource"),
+  async (req: Request, res: Response) => {
+    const file = req.file;
+    const url = req.protocol + "://" + req.get("host");
+
+    try {
+      const updatedProfileImage = await updateProfileImage(
+        req.params.id,
+        url,
+        file,
+        "defaultSource"
+      );
+
+      res.json(updatedProfileImage);
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  }
+);
 
 router.patch("/:id", async (req: Request, res: Response) => {
   try {
