@@ -1,11 +1,11 @@
 /**
  * Required External Modules
  */
+import path from "path";
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-
 import { createServer } from "http";
 import { Server } from "socket.io";
 
@@ -51,9 +51,13 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
+app.use(express.static(path.join(__dirname, "../")));
 app.use(jwt());
-
+app.use(
+  express.urlencoded({
+    extended: false,
+  })
+);
 app.use(express.json());
 
 const mongoConfig = {
@@ -118,9 +122,9 @@ app.use("/matches", matchRouter);
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);
 
-app.use("/", (req, res) => {
-  res.json("alive");
-});
+// app.use("/", (req, res) => {
+//   res.json("alive");
+// });
 
 app.use(errorHandler);
 
