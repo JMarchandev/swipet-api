@@ -96,7 +96,6 @@ export const createProfile = async (req: CreateProfileRequest) => {
 
 export const updateProfileImage = async (
   userId: string,
-  url: string,
   file: any,
   keyToUpdate: string
 ) => {
@@ -104,7 +103,7 @@ export const updateProfileImage = async (
     const currentUser = await getProfileById(userId);
     currentUser.profileImage = {
       ...currentUser.profileImage,
-      [keyToUpdate]: url + "/" + file.path,
+      [keyToUpdate]: file.path,
     };
     currentUser.updatedDate = Date.now();
 
