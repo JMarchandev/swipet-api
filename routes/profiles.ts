@@ -109,12 +109,10 @@ router.patch(
   upload.single("croppedImage"),
   async (req: Request, res: Response) => {
     const file = req.file;
-    const url = req.protocol + "://" + req.get("host");
 
     try {
       const updatedProfileImage = await updateProfileImage(
         req.params.id,
-        url,
         file,
         "croppedImage"
       );
@@ -131,12 +129,10 @@ router.patch(
   upload.single("defaultSource"),
   async (req: Request, res: Response) => {
     const file = req.file;
-    const url = req.protocol + "://" + req.get("host");
 
     try {
       const updatedProfileImage = await updateProfileImage(
         req.params.id,
-        url,
         file,
         "defaultSource"
       );
