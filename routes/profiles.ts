@@ -109,6 +109,7 @@ router.patch(
   "/:id/cropped-image",
   upload.single("croppedImage"),
   async (req: Request, res: Response) => {
+    console.log("croppedImage", req.file);
     const file = req.file;
 
     try {
@@ -129,6 +130,7 @@ router.patch(
   "/:id/default-image",
   upload.single("defaultSource"),
   async (req: Request, res: Response) => {
+    console.log("defaultSource", req.file);
     const file = req.file;
 
     try {
