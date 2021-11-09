@@ -51,7 +51,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.static(path.join(__dirname, "../")));
+app.use(express.static(path.join("../")));
 app.use(jwt());
 app.use(
   express.urlencoded({
