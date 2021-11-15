@@ -1,7 +1,6 @@
 /**
  * Required External Modules
  */
-import path from "path";
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
@@ -51,7 +50,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.static(path.join("../")));
 app.use(jwt());
 app.use(
   express.urlencoded({
@@ -121,10 +119,6 @@ app.use("/matches", matchRouter);
 
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);
-
-// app.use("/", (req, res) => {
-//   res.json("alive");
-// });
 
 app.use(errorHandler);
 
