@@ -1,3 +1,4 @@
+import { uploadImageProfile } from "./../service/aws/bucketS3";
 import { getNbRandomProfile, generateJWT } from "./../service/ProfilesServices";
 const Profile = require("../models/Profile");
 
@@ -99,11 +100,19 @@ export const updateProfileImage = async (
   file: any,
   keyToUpdate: string
 ) => {
+  const fileName = file.fieldname + "_" + userId + "_" + Date.now();
+
   try {
+    const uploadedImageProfile = await uploadImageProfile(
+      userId,
+      file,
+      fileName
+    );
+
     const currentUser = await getProfileById(userId);
     currentUser.profileImage = {
       ...currentUser.profileImage,
-      [keyToUpdate]: file.path,
+      [keyToUpdate]: uploadedImageProfile.Location,
     };
     currentUser.updatedDate = Date.now();
 
