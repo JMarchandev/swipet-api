@@ -37,7 +37,7 @@ export const getConversationById = async (conversationId: string) => {
     })
       .populate({
         path: "members",
-        select: "firstName lastName",
+        select: "firstName lastName profileImage",
       })
       .populate({
         path: "messages",
