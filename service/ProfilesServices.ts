@@ -35,8 +35,8 @@ const removeExceeding = (list: ProfileType[], nbRequested: number) => {
 };
 
 const getRandomNumber = async () => {
-  const nbProduct = await Profile.count().exec();
-  return Math.floor(Math.random() * nbProduct);
+  const nbProfile = await Profile.count().exec();
+  return Math.floor(Math.random() * nbProfile);
 };
 
 export const getNbRandomProfile = async (

@@ -1,5 +1,6 @@
 import { uploadImageProfile } from "./../service/aws/bucketS3";
 import { getNbRandomProfile, generateJWT } from "./../service/ProfilesServices";
+import { createMatch } from "./MatchController";
 const Profile = require("../models/Profile");
 
 export type CreateProfileRequest = {
@@ -98,7 +99,7 @@ export const createProfile = async (req: CreateProfileRequest) => {
 export const updateProfileImage = async (
   userId: string,
   file: any,
-  keyToUpdate: string
+  keyToUpdate: "croppedImage" | "defaultSource"
 ) => {
   const fileName = file.fieldname + "_" + userId + "_" + Date.now();
 
@@ -106,7 +107,8 @@ export const updateProfileImage = async (
     const uploadedImageProfile = await uploadImageProfile(
       userId,
       file,
-      fileName
+      fileName,
+      keyToUpdate
     );
 
     const currentUser = await getProfileById(userId);
@@ -121,6 +123,37 @@ export const updateProfileImage = async (
     return updatedProfile.profileImage[keyToUpdate];
   } catch (error) {
     errorLogger("updateProfileImage", error);
+    return error;
+  }
+};
+
+export const likeProfile = async (
+  profileId: string,
+  likedProfileId: string
+) => {
+  try {
+    const likedProfile = await getProfileById(likedProfileId);
+    const updatedUser = await putProfile(profileId, {
+      like_id: likedProfileId,
+    });
+    
+    if (likedProfile.likes.includes(profileId)) {
+      const { match, conversation }: any = await createMatch({
+        members: [likedProfileId, profileId],
+      });
+      return {
+        message: "MATCHED",
+        match,
+        conversation: conversation._id,
+      };
+    } else {
+      return {
+        message: "LIKED",
+        likes: updatedUser.likes,
+      };
+    }
+  } catch (error) {
+    errorLogger("likeProfile", error);
     return error;
   }
 };
@@ -195,4 +228,5 @@ module.exports = {
   putProfile,
   removeProfile,
   updateProfileImage,
+  likeProfile
 };
