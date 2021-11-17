@@ -31,15 +31,20 @@ const uploadFile = async (
   });
 };
 
-const deleteContentDirectory = (content: any[]) => {
-  content.forEach((item) =>
-    s3.deleteObject(
-      { Bucket: BUCKET_NAME || "", Key: item.Key },
-      function (err) {
-        if (err) console.log(err);
-      }
-    )
-  );
+const deleteContentDirectory = (
+  content: any[],
+  objectToDelete: "croppedImage" | "defaultSource"
+) => {
+  content.forEach((item) => {
+    if (item.Key.split("/")[1].split("_")[0] === objectToDelete) {
+      s3.deleteObject(
+        { Bucket: BUCKET_NAME || "", Key: item.Key },
+        function (err) {
+          if (err) console.log(err);
+        }
+      );
+    }
+  });
 };
 
 const checkBucketFolderExist = (
@@ -62,13 +67,14 @@ const checkBucketFolderExist = (
 export const uploadImageProfile = async (
   folderName: string,
   file: any,
-  fileName: string
+  fileName: string,
+  key: "croppedImage" | "defaultSource"
 ) => {
   try {
     const directory = await checkBucketFolderExist(folderName);
 
     if (directory?.Contents) {
-      deleteContentDirectory(directory.Contents);
+      deleteContentDirectory(directory.Contents, key);
     }
 
     return await uploadFile(file, folderName + "/" + fileName);

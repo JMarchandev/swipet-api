@@ -7,6 +7,7 @@ import {
   putProfile,
   updateProfileImage,
   removeProfile,
+  likeProfile,
 } from "../controllers/ProfileController";
 
 import multer from "multer";
@@ -100,11 +101,22 @@ router.patch(
   }
 );
 
+router.patch("/:id/like", async (req: Request, res: Response) => {
+  try {
+    const updatedProfile = await likeProfile(req.params.id, req.body.like_id);
+    res.json(updatedProfile);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
 router.patch("/:id", async (req: Request, res: Response) => {
   try {
     const updatedProfile = await putProfile(req.params.id, req.body);
     res.json(updatedProfile);
   } catch (error) {
+
     res.status(400).json(error);
   }
 });
