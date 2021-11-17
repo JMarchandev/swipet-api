@@ -18,7 +18,7 @@ const messageModel = new Mongoose.Schema({
   creationDate: {
     type: Date,
     required: true,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 

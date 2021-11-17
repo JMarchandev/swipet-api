@@ -58,7 +58,7 @@ export const createMatch = async (req: CreateMatchRequest) => {
 export const getMatchesByProfileId = async (profileId: string) => {
   try {
     const currentUser = await getProfileById(profileId);
-    const { matches } = await currentUser.populate({ path: "matches.members", select: "firstName lastName img_uri" });
+    const { matches } = await currentUser.populate({ path: "matches.members", select: "firstName lastName profileImage" });
 
     return matches;
   } catch (error) {
