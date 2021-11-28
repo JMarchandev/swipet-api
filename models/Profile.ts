@@ -35,7 +35,7 @@ const profileModel = new Mongoose.Schema({
       type: Mongoose.Schema.Types.ObjectId,
       ref: "Profile",
       required: true,
-      default: ["614c53dd2fd165ac8e7fb72b"],
+      default: [],
     },
   ],
   unlikes: [
@@ -78,6 +78,14 @@ const profileModel = new Mongoose.Schema({
     required: false,
     default: false,
   },
+  animals: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "Animal",
+      required: true,
+      default: [],
+    },
+  ],
   creationDate: {
     type: Date,
     required: true,
