@@ -23,6 +23,7 @@ export type UpdateProfileRequest = {
   isLookingForAnimal?: boolean;
   isLookingForPetSitter?: boolean;
   description?: string;
+  animals?: string[];
 };
 
 const errorLogger = (functionName: string, error: any) => {
@@ -53,9 +54,12 @@ export const getRandomProfiles = async (expectedIds: string[]) => {
 
 export const getProfileById = async (profileId: string) => {
   try {
-    const profile = await Profile.findOne({ _id: profileId }).populate(
-      "matches"
-    );
+    const profile = await Profile.findOne({ _id: profileId })
+      .populate("matches")
+      .populate({
+        path: "animals",
+        match: { deletedDate: undefined },
+      });
     return profile;
   } catch (error) {
     errorLogger("getOneById", error);
@@ -136,7 +140,7 @@ export const likeProfile = async (
     const updatedUser = await putProfile(profileId, {
       like_id: likedProfileId,
     });
-    
+
     if (likedProfile.likes.includes(profileId)) {
       const { match, conversation }: any = await createMatch({
         members: [likedProfileId, profileId],
@@ -196,6 +200,9 @@ export const putProfile = async (
     if (typeof req.isLookingForPetSitter === "boolean") {
       currentUser.isLookingForPetSitter = req.isLookingForPetSitter;
     }
+    if (req.animals) {
+      currentUser.animals = req.animals;
+    }
     currentUser.updatedDate = Date.now();
 
     const updatedProfile = await currentUser.save();
@@ -228,5 +235,5 @@ module.exports = {
   putProfile,
   removeProfile,
   updateProfileImage,
-  likeProfile
+  likeProfile,
 };

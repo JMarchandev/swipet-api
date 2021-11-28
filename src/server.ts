@@ -117,6 +117,9 @@ app.use("/messages", messageRouter);
 const matchRouter = require("../routes/matches");
 app.use("/matches", matchRouter);
 
+const animalRouter = require("../routes/animals");
+app.use("/my-animal", animalRouter);
+
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);
 
