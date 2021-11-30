@@ -208,7 +208,7 @@ export const putProfile = async (
     const updatedProfile = await currentUser.save();
     return updatedProfile;
   } catch (error) {
-    errorLogger("put", error);
+    errorLogger("putProfile", error);
     return error;
   }
 };
