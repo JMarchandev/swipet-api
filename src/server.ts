@@ -58,6 +58,11 @@ app.use(
 );
 app.use(express.json());
 
+var multer = require("multer");
+var upload = multer();
+
+app.use(upload.array());
+
 const mongoConfig = {
   useNewUrlParser: true,
 };

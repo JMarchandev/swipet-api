@@ -22,6 +22,16 @@ const animalModel = new Mongoose.Schema({
     type: String,
     required: true,
   },
+  profileImage: {
+    croppedImage: {
+      type: String,
+      required: false,
+    },
+    defaultSource: {
+      type: String,
+      required: false,
+    },
+  },
   creationDate: {
     type: Date,
     required: true,

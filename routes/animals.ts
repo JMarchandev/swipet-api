@@ -1,3 +1,4 @@
+import multer from "multer";
 import express, { Request, Response } from "express";
 import {
   createAnimalProfile,
@@ -5,6 +6,9 @@ import {
   removeAnimalProfile,
 } from "../controllers/AnimalController";
 const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // router.get("/", async (req: Request, res: Response) => {
 //   try {
@@ -25,6 +29,7 @@ const router = express.Router();
 // });
 
 router.post("/", async (req: Request, res: Response) => {
+  return console.log(req.body)
   try {
     const animal = await createAnimalProfile(req.body);
     res.json(animal);
