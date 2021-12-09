@@ -64,7 +64,7 @@ const checkBucketFolderExist = (
   });
 };
 
-export const uploadImageProfile = async (
+export const uploadImage = async (
   folderName: string,
   file: any,
   fileName: string,

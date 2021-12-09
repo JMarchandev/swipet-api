@@ -1,3 +1,4 @@
+import { uploadImage } from "../service/aws/bucketS3";
 import { getProfileById, putProfile } from "./ProfileController";
 const Animal = require("../models/Animal");
 
@@ -16,9 +17,26 @@ type updateAnimalRequest = {
   animalType: "CAT" | "DOG" | string;
 };
 
+type AnimalType = "DOG" | "CAT";
+
 const errorLogger = (functionName: string, error: any) => {
   console.error(`ProfileController: error on ${functionName}`);
   console.error("Error => " + error);
+};
+
+const getDefaultAnimalProfileImage = (type: AnimalType) => {
+  const url = "https://swipet-api-animal-pi.s3.eu-west-3.amazonaws.com/";
+  if (type === "CAT") {
+    return {
+      defaultSource: url + "cat.jpg",
+      croppedImage: url + "cropped_cat.jpg",
+    };
+  } else if (type === "DOG") {
+    return {
+      defaultSource: url + "dog.jpg",
+      croppedImage: url + "cropped_dog.jpg",
+    };
+  }
 };
 
 export const getAnimalById = async (animalId: string) => {
@@ -32,7 +50,10 @@ export const getAnimalById = async (animalId: string) => {
 };
 
 export const createAnimalProfile = async (req: CreateAnimalProfileRequest) => {
-  const newAnimalProfile = await new Animal(req);
+  const newAnimalProfile = await new Animal({
+    ...req,
+    profileImage: getDefaultAnimalProfileImage(req.animalType),
+  });
 
   try {
     const ownerProfile = await getProfileById(req.ownerId);
@@ -70,9 +91,40 @@ export const putAnimalProfile = async (
     currentAnimal.updatedDate = Date.now();
 
     const updatedAnimalProfile = await currentAnimal.save();
-    return updatedAnimalProfile
+    return updatedAnimalProfile;
   } catch (error) {
     errorLogger("putAnimalProfile", error);
+    return error;
+  }
+};
+
+export const updateAnimalProfileImage = async (
+  animalId: string,
+  file: any,
+  keyToUpdate: "croppedImage" | "defaultSource"
+) => {
+  const fileName = file.fieldname + "_" + animalId + "_" + Date.now();
+
+  try {
+    const uploadedImageProfile = await uploadImage(
+      animalId,
+      file,
+      fileName,
+      keyToUpdate
+    );    
+
+    const currentAnimal = await getAnimalById(animalId);
+    
+    currentAnimal.profileImage = {
+      ...currentAnimal.profileImage,
+      [keyToUpdate]: uploadedImageProfile.Location,
+    };
+    currentAnimal.updatedDate = Date.now();
+    
+    const updatedAnimal = await currentAnimal.save();
+    return updatedAnimal;
+  } catch (error) {
+    errorLogger("updateProfileImage", error);
     return error;
   }
 };
@@ -89,6 +141,7 @@ export const removeAnimalProfile = async (animalId: string) => {
 
 module.exports = {
   createAnimalProfile,
+  updateAnimalProfileImage,
   removeAnimalProfile,
-  putAnimalProfile
+  putAnimalProfile,
 };

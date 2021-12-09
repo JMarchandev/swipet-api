@@ -53,11 +53,15 @@ const profileModel = new Mongoose.Schema({
   profileImage: {
     croppedImage: {
       type: String,
-      required: false,
+      required: true,
+      default:
+        "https://swipet-api-pi.s3.eu-west-3.amazonaws.com/default/no_image.png",
     },
     defaultSource: {
       type: String,
-      required: false,
+      required: true,
+      default:
+        "https://swipet-api-pi.s3.eu-west-3.amazonaws.com/default/no_image.png",
     },
   },
   matches: [
