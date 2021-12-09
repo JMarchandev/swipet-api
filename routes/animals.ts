@@ -4,6 +4,7 @@ import {
   createAnimalProfile,
   putAnimalProfile,
   removeAnimalProfile,
+  updateAnimalProfileImage,
 } from "../controllers/AnimalController";
 const router = express.Router();
 
@@ -29,7 +30,6 @@ const upload = multer({ storage: storage });
 // });
 
 router.post("/", async (req: Request, res: Response) => {
-  return console.log(req.body)
   try {
     const animal = await createAnimalProfile(req.body);
     res.json(animal);
@@ -49,6 +49,44 @@ router.patch("/:id", async (req: Request, res: Response) => {
     res.status(400).json(error);
   }
 });
+
+router.patch(
+  "/:id/cropped-image",
+  upload.single("croppedImage"),
+  async (req: Request, res: Response) => {
+    const file = req.file;
+    
+    try {
+      const updatedAnimalProfileImage = await updateAnimalProfileImage(
+        req.params.id,
+        file,
+        "croppedImage"
+      );
+      res.json(updatedAnimalProfileImage);
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  }
+);
+
+router.patch(
+  "/:id/default-image",
+  upload.single("defaultSource"),
+  async (req: Request, res: Response) => {
+    const file = req.file;
+    
+    try {
+      const updatedAnimalProfileImage = await updateAnimalProfileImage(
+        req.params.id,
+        file,
+        "defaultSource"
+      );
+      res.json(updatedAnimalProfileImage);
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  }
+);
 
 router.delete("/:id", async (req: Request, res: Response) => {
   try {

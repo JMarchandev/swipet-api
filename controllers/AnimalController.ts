@@ -1,3 +1,4 @@
+import { uploadImage } from "../service/aws/bucketS3";
 import { getProfileById, putProfile } from "./ProfileController";
 const Animal = require("../models/Animal");
 
@@ -97,6 +98,37 @@ export const putAnimalProfile = async (
   }
 };
 
+export const updateAnimalProfileImage = async (
+  animalId: string,
+  file: any,
+  keyToUpdate: "croppedImage" | "defaultSource"
+) => {
+  const fileName = file.fieldname + "_" + animalId + "_" + Date.now();
+
+  try {
+    const uploadedImageProfile = await uploadImage(
+      animalId,
+      file,
+      fileName,
+      keyToUpdate
+    );    
+
+    const currentAnimal = await getAnimalById(animalId);
+    
+    currentAnimal.profileImage = {
+      ...currentAnimal.profileImage,
+      [keyToUpdate]: uploadedImageProfile.Location,
+    };
+    currentAnimal.updatedDate = Date.now();
+    
+    const updatedAnimal = await currentAnimal.save();
+    return updatedAnimal;
+  } catch (error) {
+    errorLogger("updateProfileImage", error);
+    return error;
+  }
+};
+
 export const removeAnimalProfile = async (animalId: string) => {
   try {
     const currentAnimal = await getAnimalById(animalId);
@@ -109,6 +141,7 @@ export const removeAnimalProfile = async (animalId: string) => {
 
 module.exports = {
   createAnimalProfile,
+  updateAnimalProfileImage,
   removeAnimalProfile,
   putAnimalProfile,
 };

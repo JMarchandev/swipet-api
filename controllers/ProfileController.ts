@@ -1,4 +1,4 @@
-import { uploadImageProfile } from "./../service/aws/bucketS3";
+import { uploadImage } from "./../service/aws/bucketS3";
 import { getNbRandomProfile, generateJWT } from "./../service/ProfilesServices";
 import { createMatch } from "./MatchController";
 const Profile = require("../models/Profile");
@@ -69,7 +69,12 @@ export const getProfileById = async (profileId: string) => {
 
 export const getProfileByFirebaseId = async (firebaseId: string) => {
   try {
-    const profile = await Profile.findOne({ firebaseId });
+    const profile = await Profile.findOne({ firebaseId })
+    .populate("matches")
+    .populate({
+      path: "animals",
+      match: { deletedDate: undefined },
+    });;
     const jwt = generateJWT(profile._id);
     return { profile, jwt };
   } catch (error) {
@@ -108,7 +113,7 @@ export const updateProfileImage = async (
   const fileName = file.fieldname + "_" + userId + "_" + Date.now();
 
   try {
-    const uploadedImageProfile = await uploadImageProfile(
+    const uploadedImageProfile = await uploadImage(
       userId,
       file,
       fileName,
