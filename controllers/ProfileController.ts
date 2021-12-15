@@ -74,7 +74,7 @@ export const getProfileByFirebaseId = async (firebaseId: string) => {
     .populate({
       path: "animals",
       match: { deletedDate: undefined },
-    });;
+    });
     const jwt = generateJWT(profile._id);
     return { profile, jwt };
   } catch (error) {
