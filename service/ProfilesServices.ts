@@ -1,3 +1,4 @@
+import { profile } from "console";
 import jwt from "jsonwebtoken";
 const config = require("../config.json");
 const Profile = require("../models/Profile");
@@ -17,79 +18,6 @@ type ProfileType = {
   __v: any;
 };
 
-const randomProfileMapper = (
-  expectedIds: string[],
-  profiles: ProfileType[]
-): ProfileType[] => {
-  const filtredProfiles: ProfileType[] = [];
-  profiles.map((profile) => {
-    !expectedIds.includes(profile._id.toString()) &&
-      filtredProfiles.push(profile);
-  });
-
-  return filtredProfiles;
-};
-
-const removeExceeding = (list: ProfileType[], nbRequested: number) => {
-  return list.splice(list.length - nbRequested, nbRequested);
-};
-
-const getRandomNumber = async () => {
-  const nbProfile = await Profile.count().exec();
-  return Math.floor(Math.random() * nbProfile);
-};
-
-export const getNbRandomProfile = async (
-  nbRequested: number,
-  expectedIds: string[]
-) => {
-  let i = 0;
-  let randomProfiles: ProfileType[] = [];
-  const uniqueValuesSet = new Set();
-
-  do {
-    i++;
-    if (i >= 10) {
-      break;
-    }
-
-    if (randomProfiles.length === nbRequested) {
-      break;
-    }
-
-    const random = await getRandomNumber();
-
-    const profiles = await Profile.find({ deletedDate: null })
-      .skip(random)
-      .limit(nbRequested * 2);
-
-    const mappedProfiles: ProfileType[] = randomProfileMapper(
-      expectedIds,
-      profiles
-    );
-
-    const filteredArr = mappedProfiles.filter((obj) => {
-      const isPresentInSet = uniqueValuesSet.has(obj._id.toString());
-      uniqueValuesSet.add(obj._id.toString());
-      return !isPresentInSet;
-    });
-
-    randomProfiles.push(...filteredArr);
-  } while (randomProfiles.length <= nbRequested);
-
-  if (randomProfiles.length >= nbRequested) {
-    return {
-      message: i >= 10 && randomProfiles.length === 0 ? "OUT" : "OK",
-      randomProfiles: removeExceeding(randomProfiles, nbRequested),
-    };
-  } else {
-    return {
-      message: i >= 10 && randomProfiles.length === 0 ? "OUT" : "OK",
-      randomProfiles: randomProfiles,
-    };
-  }
-};
-
 export const generateJWT = (userId: string) => {
   const token = jwt.sign({ sub: userId }, config.secret, {
     expiresIn: "7d",
@@ -97,3 +25,60 @@ export const generateJWT = (userId: string) => {
 
   return token;
 };
+
+const removeExceeding = (list: ProfileType[], nbRequested: number) => {
+  return list.splice(list.length - nbRequested, nbRequested);
+};
+
+export const getNbRandomProfile = async (
+  nbRequested: number,
+  expectedIds: string[]
+) => {
+  try {
+    let i = 0
+    let listExpectedIds = [...expectedIds]
+    let result: ProfileType[] = []
+
+    while (result.length < nbRequested) {
+      i++
+
+      if (i < 10) {
+        const profiles = await Profile
+          .aggregate()
+          .match({ deletedDate: undefined || null })
+          .sample(10)
+
+        await Profile.populate(profiles, {
+          path: "animals",
+          match: { deletedDate: undefined }
+        })
+
+        profiles.map((profile: ProfileType) => {
+          if (!listExpectedIds.includes(`${profile._id}`)) {
+            listExpectedIds.push(`${profile._id}`)
+            result.push(profile)
+          }
+        })
+      } else {
+        break
+      }
+    }
+
+    if (result.length > nbRequested) {
+      result = removeExceeding(result, nbRequested)
+    }
+    
+    return {
+      message: i >= 10 && result.length === 0 ? "OUT" : "OK",
+      randomProfiles: result,
+    };
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+
+}
+
+
+
+
