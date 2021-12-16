@@ -1,5 +1,6 @@
 import { uploadImage } from "../service/aws/bucketS3";
 import { getProfileById, putProfile } from "./ProfileController";
+const logger = require('../service/loggers/winston/index');
 const Animal = require("../models/Animal");
 
 type CreateAnimalProfileRequest = {
@@ -18,11 +19,6 @@ type updateAnimalRequest = {
 };
 
 type AnimalType = "DOG" | "CAT";
-
-const errorLogger = (functionName: string, error: any) => {
-  console.error(`ProfileController: error on ${functionName}`);
-  console.error("Error => " + error);
-};
 
 const getDefaultAnimalProfileImage = (type: AnimalType) => {
   const url = "https://swipet-api-animal-pi.s3.eu-west-3.amazonaws.com/";
@@ -44,7 +40,7 @@ export const getAnimalById = async (animalId: string) => {
     const animal = await Animal.findOne({ _id: animalId });
     return animal;
   } catch (error) {
-    errorLogger("getAnimalById", error);
+    logger.error(error)
     throw error;
   }
 };
@@ -64,7 +60,7 @@ export const createAnimalProfile = async (req: CreateAnimalProfileRequest) => {
     });
     return createdAnimalProfile;
   } catch (error) {
-    errorLogger("createAnimalProfile", error);
+    logger.error(error)
     return error;
   }
 };
@@ -93,7 +89,7 @@ export const putAnimalProfile = async (
     const updatedAnimalProfile = await currentAnimal.save();
     return updatedAnimalProfile;
   } catch (error) {
-    errorLogger("putAnimalProfile", error);
+    logger.error(error)
     return error;
   }
 };
@@ -111,20 +107,20 @@ export const updateAnimalProfileImage = async (
       file,
       fileName,
       keyToUpdate
-    );    
+    );
 
     const currentAnimal = await getAnimalById(animalId);
-    
+
     currentAnimal.profileImage = {
       ...currentAnimal.profileImage,
       [keyToUpdate]: uploadedImageProfile.Location,
     };
     currentAnimal.updatedDate = Date.now();
-    
+
     const updatedAnimal = await currentAnimal.save();
     return updatedAnimal;
   } catch (error) {
-    errorLogger("updateProfileImage", error);
+    logger.error(error)
     return error;
   }
 };
@@ -136,7 +132,9 @@ export const removeAnimalProfile = async (animalId: string) => {
 
     const deletedAnimal = await currentAnimal.save();
     return deletedAnimal;
-  } catch (error) {}
+  } catch (error) {
+    logger.error(error)
+  }
 };
 
 module.exports = {

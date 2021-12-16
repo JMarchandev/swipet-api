@@ -1,6 +1,7 @@
 import { getProfileById, putProfile } from "./ProfileController";
-const Match = require("../models/Match");
 import { createConversation } from "./ConversationController";
+const logger = require('../service/loggers/winston/index');
+const Match = require("../models/Match");
 
 type CreateMatchRequest = {
   members: string[];
@@ -10,17 +11,12 @@ type UpdateMatchRequest = {
   conversation_id?: string;
 };
 
-const errorLogger = (functionName: string, error: any) => {
-  console.error(`MatchController: error on ${functionName}`);
-  console.error("Error => " + error);
-};
-
 export const getMatchById = async (match_id: string) => {
   try {
     const match = await Match.findOne({ _id: match_id });
     return match;
   } catch (error) {
-    errorLogger("getMatchById", error);
+    logger.error(error)
     return error;
   }
 };
@@ -50,7 +46,7 @@ export const createMatch = async (req: CreateMatchRequest) => {
 
     return { match: updatedMatch, conversation: newConversation };
   } catch (error) {
-    errorLogger("createMatch", error);
+    logger.error(error)
     return error;
   }
 };
@@ -62,7 +58,7 @@ export const getMatchesByProfileId = async (profileId: string) => {
 
     return matches;
   } catch (error) {
-    errorLogger("getMatchesByProfileId", error);
+    logger.error(error)
     throw error;
   }
 };
@@ -83,7 +79,7 @@ export const updateMatch = async (
 
     return populatedMatch;
   } catch (error) {
-    errorLogger("updateMatch", error);
+    logger.error(error)
     return error;
   }
 };

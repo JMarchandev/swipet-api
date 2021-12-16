@@ -1,4 +1,5 @@
 const Conversation = require("../models/Conversation");
+const logger = require('../service/loggers/winston/index');
 
 type CreateConversationRequest = {
   members: string[];
@@ -7,11 +8,6 @@ type CreateConversationRequest = {
 
 type UpdateConversationRequest = {
   message_id: string;
-};
-
-const errorLogger = (functionName: string, error: any) => {
-  console.error(`ConversationController: error on ${functionName}`);
-  console.error("Error => " + error);
 };
 
 export const createConversation = async (req: CreateConversationRequest) => {
@@ -25,7 +21,7 @@ export const createConversation = async (req: CreateConversationRequest) => {
     const createdConversation = newConversation.save();
     return createdConversation;
   } catch (error) {
-    errorLogger("createConversation", error);
+    logger.error(error)
     return error;
   }
 };
@@ -46,7 +42,7 @@ export const getConversationById = async (conversationId: string) => {
       });
     return conversation;
   } catch (error) {
-    errorLogger("getConversationById", error);
+    logger.error(error)
     return error;
   }
 };
@@ -65,7 +61,7 @@ export const putConversation = async (
     const updatedConversation = await conversation.save();
     return updatedConversation;
   } catch (error) {
-    errorLogger("putConversation", error);
+    logger.error(error)
     return error;
   }
 };
