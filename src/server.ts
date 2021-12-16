@@ -12,6 +12,7 @@ import * as MessageService from "../service/socket/message";
 
 const jwt = require("../service/jwt");
 const errorHandler = require("../service/error-handler");
+const morgan =  require('../service/loggers/morgan')
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ const corsOptions = {
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+app.use(morgan)
 app.use(cors(corsOptions));
 app.use(jwt());
 app.use(

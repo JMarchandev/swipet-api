@@ -1,4 +1,5 @@
 import { putConversation } from "./ConversationController";
+const logger = require('../service/loggers/winston/index');
 
 const Message = require("../models/Message");
 
@@ -6,11 +7,6 @@ type CreateMessageRequest = {
   content_text: string;
   sender: string;
   conversation: string;
-};
-
-const errorLogger = (functionName: string, error: any) => {
-  console.error(`MessageController: error on ${functionName}`);
-  console.error("Error => " + error);
 };
 
 export const createMessage = async (req: CreateMessageRequest) => {
@@ -22,7 +18,7 @@ export const createMessage = async (req: CreateMessageRequest) => {
 
     return createdMessage;
   } catch (error) {
-    errorLogger("createMatch", error);
+    logger.error(error)
     return error;
   }
 };

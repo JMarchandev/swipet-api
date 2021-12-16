@@ -1,6 +1,7 @@
 import { uploadImage } from "./../service/aws/bucketS3";
 import { getNbRandomProfile, generateJWT } from "./../service/ProfilesServices";
 import { createMatch } from "./MatchController";
+const logger = require('../service/loggers/winston');
 const Profile = require("../models/Profile");
 
 export type CreateProfileRequest = {
@@ -26,17 +27,12 @@ export type UpdateProfileRequest = {
   animals?: string[];
 };
 
-const errorLogger = (functionName: string, error: any) => {
-  console.error(`ProfileController: error on ${functionName}`);
-  console.error("Error => " + error);
-};
-
 export const getProfiles = async () => {
   try {
     const profile = await Profile.find({ deletedDate: null });
     return profile;
   } catch (error) {
-    errorLogger("get", error);
+    logger.error(error)
     return error;
   }
 };
@@ -47,7 +43,7 @@ export const getRandomProfiles = async (expectedIds: string[]) => {
 
     return randomProfiles;
   } catch (error) {
-    errorLogger("getRandomProfiles", error);
+    logger.error(error)
     throw error;
   }
 };
@@ -62,7 +58,7 @@ export const getProfileById = async (profileId: string) => {
       });
     return profile;
   } catch (error) {
-    errorLogger("getOneById", error);
+    logger.error(error)
     throw error;
   }
 };
@@ -70,15 +66,15 @@ export const getProfileById = async (profileId: string) => {
 export const getProfileByFirebaseId = async (firebaseId: string) => {
   try {
     const profile = await Profile.findOne({ firebaseId })
-    .populate("matches")
-    .populate({
-      path: "animals",
-      match: { deletedDate: undefined },
-    });
+      .populate("matches")
+      .populate({
+        path: "animals",
+        match: { deletedDate: undefined },
+      });
     const jwt = generateJWT(profile._id);
     return { profile, jwt };
   } catch (error) {
-    errorLogger("getOneById", error);
+    logger.error(error)
     return error;
   }
 };
@@ -100,7 +96,7 @@ export const createProfile = async (req: CreateProfileRequest) => {
 
     return { createdProfile, jwt };
   } catch (error) {
-    errorLogger("create", error);
+    logger.error(error)
     return error;
   }
 };
@@ -131,7 +127,7 @@ export const updateProfileImage = async (
 
     return updatedProfile.profileImage[keyToUpdate];
   } catch (error) {
-    errorLogger("updateProfileImage", error);
+    logger.error(error)
     return error;
   }
 };
@@ -162,7 +158,7 @@ export const likeProfile = async (
       };
     }
   } catch (error) {
-    errorLogger("likeProfile", error);
+    logger.error(error)
     return error;
   }
 };
@@ -213,7 +209,7 @@ export const putProfile = async (
     const updatedProfile = await currentUser.save();
     return updatedProfile;
   } catch (error) {
-    errorLogger("putProfile", error);
+    logger.error(error)
     return error;
   }
 };
@@ -226,7 +222,7 @@ export const removeProfile = async (profileId: string) => {
     const deletedUser = await currentProfile.save();
     return deletedUser;
   } catch (error) {
-    errorLogger("remove", error);
+    logger.error(error)
     return error;
   }
 };
