@@ -9,6 +9,7 @@ type CreateMatchRequest = {
 
 type UpdateMatchRequest = {
   conversation_id?: string;
+  proposalPaymentId?: string;
 };
 
 export const getMatchById = async (match_id: string) => {
@@ -72,6 +73,11 @@ export const updateMatch = async (
     if (req.conversation_id) {
       currentMatch.conversation_id = req.conversation_id;
     }
+    if (req.proposalPaymentId) {
+      currentMatch.proposalPayments = currentMatch.proposalPayments.length
+        ? [...currentMatch.proposalPayments, req.proposalPaymentId]
+        : [req.proposalPaymentId];
+    }
     currentMatch.updatedDate = Date.now();
 
     const updatedMatch = await currentMatch.save();
@@ -87,4 +93,5 @@ export const updateMatch = async (
 module.exports = {
   createMatch,
   getMatchesByProfileId,
+  updateMatch
 };
