@@ -13,6 +13,13 @@ const matchModel = new Mongoose.Schema({
     ref: "Conversation",
     required: false,
   },
+  proposalPayments: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "ProposalPayment",
+      required: false,
+    },
+  ],
   creationDate: {
     type: Date,
     required: true,

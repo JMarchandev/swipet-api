@@ -90,6 +90,14 @@ const profileModel = new Mongoose.Schema({
       default: [],
     },
   ],
+  proposalPayments: [
+    {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: "ProposalPayment",
+      required: true,
+      default: [],
+    }
+  ],
   creationDate: {
     type: Date,
     required: true,

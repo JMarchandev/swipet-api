@@ -12,7 +12,7 @@ import * as MessageService from "../service/socket/message";
 
 const jwt = require("../service/jwt");
 const errorHandler = require("../service/error-handler");
-const morgan =  require('../service/loggers/morgan')
+const morgan = require('../service/loggers/morgan')
 
 dotenv.config();
 
@@ -121,6 +121,9 @@ app.use("/matches", matchRouter);
 
 const animalRouter = require("../routes/animals");
 app.use("/my-animal", animalRouter);
+
+const proposalPaymentRouter = require("../routes/proposalPayment")
+app.use("/proposal-payment", proposalPaymentRouter);
 
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);

@@ -25,6 +25,7 @@ export type UpdateProfileRequest = {
   isLookingForPetSitter?: boolean;
   description?: string;
   animals?: string[];
+  proposalPayments?: string[];
 };
 
 export const getProfiles = async () => {
@@ -55,7 +56,8 @@ export const getProfileById = async (profileId: string) => {
       .populate({
         path: "animals",
         match: { deletedDate: undefined },
-      });
+      })
+      .populate({ path: "proposalPayments", populate: { path: 'ownerId receiverId', select: "name profileImage.croppedImage" } });
     return profile;
   } catch (error) {
     logger.error(error)
@@ -203,6 +205,11 @@ export const putProfile = async (
     }
     if (req.animals) {
       currentUser.animals = req.animals;
+    }
+    if (req.proposalPayments) {
+      currentUser.proposalPayments = currentUser.proposalPayments
+        ? [...currentUser.proposalPayments, req.proposalPayments]
+        : [req.proposalPayments]
     }
     currentUser.updatedDate = Date.now();
 

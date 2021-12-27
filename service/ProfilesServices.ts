@@ -54,8 +54,8 @@ export const getNbRandomProfile = async (
         })
 
         profiles.map((profile: ProfileType) => {
-          if (!listExpectedIds.includes(`${profile._id}`)) {
-            listExpectedIds.push(`${profile._id}`)
+          if (!listExpectedIds.includes(profile._id.toString())) {
+            listExpectedIds.push(profile._id.toString())
             result.push(profile)
           }
         })
