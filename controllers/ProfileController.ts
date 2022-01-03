@@ -57,8 +57,13 @@ export const getProfileById = async (profileId: string) => {
         path: "animals",
         match: { deletedDate: undefined },
       })
-      .populate({ path: "proposalPayments", populate: { path: 'ownerId receiverId', select: "name profileImage.croppedImage" } });
-    return profile;
+      .populate({
+        path: "proposalPayments",
+        populate: {
+          path: 'ownerId receiverId',
+          select: "name profileImage.croppedImage"
+        }
+      }); return profile;
   } catch (error) {
     logger.error(error)
     throw error;
@@ -72,6 +77,13 @@ export const getProfileByFirebaseId = async (firebaseId: string) => {
       .populate({
         path: "animals",
         match: { deletedDate: undefined },
+      })
+      .populate({
+        path: "proposalPayments",
+        populate: {
+          path: 'ownerId receiverId',
+          select: "name profileImage.croppedImage"
+        }
       });
     const jwt = generateJWT(profile._id);
     return { profile, jwt };
