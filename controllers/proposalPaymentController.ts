@@ -21,13 +21,16 @@ export const createProposalPayment = async (req: CreateProposalPaymentRequest) =
          * Update owner profile
          */
         await putProfile(req.ownerId, { proposalPayments: newProposalPayment._id })
-        
+
         /**
          * Update receiver profile
          */
         await putProfile(req.receiverId, { proposalPayments: newProposalPayment._id })
 
-        return newProposalPayment
+        return newProposalPayment.populate({
+            path: 'ownerId receiverId',
+            select: "name profileImage.croppedImage"
+        })
     } catch (error) {
         logger.error(error)
         return error
