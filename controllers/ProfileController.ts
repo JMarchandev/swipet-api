@@ -1,7 +1,7 @@
 import { uploadImage } from "./../service/aws/bucketS3";
 import { getNbRandomProfile, generateJWT } from "./../service/ProfilesServices";
 import { createMatch } from "./MatchController";
-const logger = require('../service/loggers/winston');
+const logger = require("../service/loggers/winston");
 const Profile = require("../models/Profile");
 
 export type CreateProfileRequest = {
@@ -25,7 +25,7 @@ export type UpdateProfileRequest = {
   isLookingForPetSitter?: boolean;
   description?: string;
   animals?: string[];
-  proposalPayments?: string[];
+  proposalPayments?: string;
 };
 
 export const getProfiles = async () => {
@@ -33,7 +33,7 @@ export const getProfiles = async () => {
     const profile = await Profile.find({ deletedDate: null });
     return profile;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -44,7 +44,7 @@ export const getRandomProfiles = async (expectedIds: string[]) => {
 
     return randomProfiles;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     throw error;
   }
 };
@@ -60,12 +60,13 @@ export const getProfileById = async (profileId: string) => {
       .populate({
         path: "proposalPayments",
         populate: {
-          path: 'ownerId receiverId',
-          select: "name profileImage.croppedImage"
-        }
-      }); return profile;
+          path: "ownerId receiverId",
+          select: "name profileImage.croppedImage",
+        },
+      });
+    return profile;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     throw error;
   }
 };
@@ -81,14 +82,14 @@ export const getProfileByFirebaseId = async (firebaseId: string) => {
       .populate({
         path: "proposalPayments",
         populate: {
-          path: 'ownerId receiverId',
-          select: "name profileImage.croppedImage"
-        }
+          path: "ownerId receiverId",
+          select: "name profileImage.croppedImage",
+        },
       });
     const jwt = generateJWT(profile._id);
     return { profile, jwt };
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -110,7 +111,7 @@ export const createProfile = async (req: CreateProfileRequest) => {
 
     return { createdProfile, jwt };
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -141,7 +142,7 @@ export const updateProfileImage = async (
 
     return updatedProfile.profileImage[keyToUpdate];
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -172,7 +173,7 @@ export const likeProfile = async (
       };
     }
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -221,14 +222,14 @@ export const putProfile = async (
     if (req.proposalPayments) {
       currentUser.proposalPayments = currentUser.proposalPayments
         ? [...currentUser.proposalPayments, req.proposalPayments]
-        : [req.proposalPayments]
+        : [req.proposalPayments];
     }
     currentUser.updatedDate = Date.now();
 
     const updatedProfile = await currentUser.save();
     return updatedProfile;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -241,7 +242,7 @@ export const removeProfile = async (profileId: string) => {
     const deletedUser = await currentProfile.save();
     return deletedUser;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
