@@ -1,6 +1,9 @@
-import { uploadImage } from "./../service/aws/bucketS3";
-import { getNbRandomProfile, generateJWT } from "./../service/ProfilesServices";
+import { generateJWT, getNbRandomProfile } from "./../service/ProfilesServices";
+
 import { createMatch } from "./MatchController";
+import { createProfileNotification } from "./NotificationsController";
+import { uploadImage } from "./../service/aws/bucketS3";
+
 const logger = require("../service/loggers/winston");
 const Profile = require("../models/Profile");
 
@@ -26,6 +29,7 @@ export type UpdateProfileRequest = {
   description?: string;
   animals?: string[];
   proposalPayments?: string;
+  notifications?: string;
 };
 
 export const getProfiles = async () => {
@@ -53,6 +57,7 @@ export const getProfileById = async (profileId: string) => {
   try {
     const profile = await Profile.findOne({ _id: profileId })
       .populate("matches")
+      .populate("notifications")
       .populate({
         path: "animals",
         match: { deletedDate: undefined },
@@ -107,9 +112,10 @@ export const createProfile = async (req: CreateProfileRequest) => {
   const newProfile = await new Profile(request);
   try {
     const createdProfile = await newProfile.save();
+    const updatedProfile = await createProfileNotification(createdProfile._id);
     const jwt = generateJWT(createdProfile._id);
 
-    return { createdProfile, jwt };
+    return { createdProfile: updatedProfile, jwt };
   } catch (error) {
     logger.error(error);
     return error;
@@ -158,9 +164,12 @@ export const likeProfile = async (
     });
 
     if (likedProfile.likes.includes(profileId)) {
-      const { match, conversation }: any = await createMatch({
-        members: [likedProfileId, profileId],
-      });
+      const { match, conversation }: any = await createMatch(
+        {
+          members: [likedProfileId, profileId],
+        },
+        likedProfile._id
+      );
       return {
         message: "MATCHED",
         match,
@@ -223,6 +232,9 @@ export const putProfile = async (
       currentUser.proposalPayments = currentUser.proposalPayments
         ? [...currentUser.proposalPayments, req.proposalPayments]
         : [req.proposalPayments];
+    }
+    if (req.notifications) {
+      currentUser.notifications = req.notifications;
     }
     currentUser.updatedDate = Date.now();
 

@@ -1,6 +1,9 @@
 import { getProfileById, putProfile } from "./ProfileController";
+
+import { addNotification } from "./NotificationsController";
 import { createConversation } from "./ConversationController";
-const logger = require('../service/loggers/winston/index');
+
+const logger = require("../service/loggers/winston/index");
 const Match = require("../models/Match");
 
 type CreateMatchRequest = {
@@ -17,12 +20,15 @@ export const getMatchById = async (match_id: string) => {
     const match = await Match.findOne({ _id: match_id });
     return match;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
 
-export const createMatch = async (req: CreateMatchRequest) => {
+export const createMatch = async (
+  req: CreateMatchRequest,
+  oppositeProfileId: string
+) => {
   let request = {
     members: req.members,
   };
@@ -41,13 +47,17 @@ export const createMatch = async (req: CreateMatchRequest) => {
       });
     });
 
+    await addNotification(oppositeProfileId, {
+      match: { match_id: createdMatch._id, seen: false },
+    });
+
     const updatedMatch = await updateMatch(newMatch._id, {
       conversation_id: newConversation._id,
     });
 
     return { match: updatedMatch, conversation: newConversation };
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -55,11 +65,14 @@ export const createMatch = async (req: CreateMatchRequest) => {
 export const getMatchesByProfileId = async (profileId: string) => {
   try {
     const currentUser = await getProfileById(profileId);
-    const { matches } = await currentUser.populate({ path: "matches.members", select: "firstName lastName profileImage" });
+    const { matches } = await currentUser.populate({
+      path: "matches.members",
+      select: "firstName lastName profileImage",
+    });
 
     return matches;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     throw error;
   }
 };
@@ -85,7 +98,7 @@ export const updateMatch = async (
 
     return populatedMatch;
   } catch (error) {
-    logger.error(error)
+    logger.error(error);
     return error;
   }
 };
@@ -93,5 +106,5 @@ export const updateMatch = async (
 module.exports = {
   createMatch,
   getMatchesByProfileId,
-  updateMatch
+  updateMatch,
 };

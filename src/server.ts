@@ -1,18 +1,21 @@
+import * as MessageService from "../service/socket/message";
+
+import { Server, Socket } from "socket.io";
+
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import cors from "cors";
+import { createServer } from "http";
 /**
  * Required External Modules
  */
 import dotenv from "dotenv";
 import express from "express";
-import cors from "cors";
+import { initConnection } from "../service/socket/socket";
 import mongoose from "mongoose";
-import { createServer } from "http";
-import { Server } from "socket.io";
-
-import * as MessageService from "../service/socket/message";
 
 const jwt = require("../service/jwt");
 const errorHandler = require("../service/error-handler");
-const morgan = require('../service/loggers/morgan')
+const morgan = require("../service/loggers/morgan");
 
 dotenv.config();
 
@@ -30,7 +33,6 @@ const MONGO_CLUSTER = process.env.MONGO_CLUSTER;
 const NODE_ORIGINS_LIST = process.env.NODE_ORIGINS_LIST
   ? process.env.NODE_ORIGINS_LIST.split(" ")
   : [];
-const LOCAL_MONGO_CLUSTER = process.env.LOCAL_MONGO_CLUSTER;
 
 /**
  *  App Configuration
@@ -38,19 +40,13 @@ const LOCAL_MONGO_CLUSTER = process.env.LOCAL_MONGO_CLUSTER;
 const app = express();
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: NODE_ORIGINS_LIST,
-    methods: ["GET", "POST"],
-  },
-});
 
 const corsOptions = {
   origin: NODE_ORIGINS_LIST,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-app.use(morgan)
+app.use(morgan);
 app.use(cors(corsOptions));
 app.use(jwt());
 app.use(
@@ -64,37 +60,14 @@ const mongoConfig = {
   useNewUrlParser: true,
 };
 
-io.on("connection", (socket) => {
-  console.log("somewone coming");
-  socket.on("connect_error", (err) => {
-    console.log(`connect_error due to ${err.message}`);
-  });
-
-  socket.on("join", ({ id, room }: { id: string; room: string }) => {
-    console.log("user " + id + " join room :" + room);
-
-    socket.join(room);
-  });
-
-  socket.on("sendMessage", async ({ room, message, sender }, callback) => {
-    console.log(room, message, sender);
-
-    try {
-      const newMessage = await MessageService.createMessage(
-        message,
-        sender,
-        room
-      );
-      io.to(room).emit("message", { message: newMessage });
-    } catch (error) {
-      console.log(error);
-    }
-  });
-
-  socket.on("disconnect", () => {
-    console.log("user disconnect");
-  });
+const io = new Server(httpServer, {
+  cors: {
+    origin: NODE_ORIGINS_LIST,
+    methods: ["GET", "POST"],
+  },
 });
+
+initConnection(io);
 
 mongoose.connect(
   `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_CLUSTER}`,
@@ -122,7 +95,7 @@ app.use("/matches", matchRouter);
 const animalRouter = require("../routes/animals");
 app.use("/my-animal", animalRouter);
 
-const proposalPaymentRouter = require("../routes/proposalPayment")
+const proposalPaymentRouter = require("../routes/proposalPayment");
 app.use("/proposal-payment", proposalPaymentRouter);
 
 const fakeRouter = require("../routes/fakes");
