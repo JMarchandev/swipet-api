@@ -96,8 +96,13 @@ const profileModel = new Mongoose.Schema({
       ref: "ProposalPayment",
       required: true,
       default: [],
-    }
+    },
   ],
+  notifications: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "Notifications",
+    required: false,
+  },
   creationDate: {
     type: Date,
     required: true,
