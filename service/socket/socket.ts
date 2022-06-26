@@ -46,13 +46,11 @@ export const initConnection = (io: any) => {
     });
 
     console.log(io.sockets.adapter.rooms);
-    
   });
 };
 
 export const emit = (room: string, keyEvent: string, data: any) => {
   if (IO) {
-      console.log('i emit')
     IO.to(room).emit(keyEvent, data);
   }
 };

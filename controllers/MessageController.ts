@@ -24,9 +24,13 @@ export const createMessage = async (req: CreateMessageRequest) => {
       }
     );
 
-    await addNotification(opositeProfileId[0]._id.toString(), {
-      message: { conversation_id: req.content_text, seen: false },
-    });
+    await addNotification(
+      opositeProfileId[0]._id.toString(),
+      {
+        messages: { conversation_id: req.conversation, seen: false },
+      },
+      "messages"
+    );
 
     return createdMessage;
   } catch (error) {

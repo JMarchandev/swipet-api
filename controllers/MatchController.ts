@@ -47,9 +47,13 @@ export const createMatch = async (
       });
     });
 
-    await addNotification(oppositeProfileId, {
-      match: { match_id: createdMatch._id, seen: false },
-    });
+    await addNotification(
+      oppositeProfileId,
+      {
+        matches: { match_id: createdMatch._id, seen: false },
+      },
+      "matches"
+    );
 
     const updatedMatch = await updateMatch(newMatch._id, {
       conversation_id: newConversation._id,

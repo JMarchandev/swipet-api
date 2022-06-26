@@ -1,8 +1,4 @@
-import * as MessageService from "../service/socket/message";
-
-import { Server, Socket } from "socket.io";
-
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { Server } from "socket.io";
 import cors from "cors";
 import { createServer } from "http";
 /**
@@ -19,13 +15,13 @@ const morgan = require("../service/loggers/morgan");
 
 dotenv.config();
 
-/**
- * App Variables
- */
 if (!process.env.PORT) {
   process.exit(1);
 }
 
+/**
+ * App Variables
+ */
 const PORT: number = parseInt(process.env.PORT);
 const MONGO_USER = process.env.MONGO_USER;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
@@ -76,6 +72,9 @@ mongoose.connect(
   mongoConfig
 );
 
+/**
+ * API Routers
+ */
 const db = mongoose.connection;
 db.on("error", (error) => console.log(error));
 db.once("open", () => console.log("database connected"));
@@ -97,6 +96,9 @@ app.use("/my-animal", animalRouter);
 
 const proposalPaymentRouter = require("../routes/proposalPayment");
 app.use("/proposal-payment", proposalPaymentRouter);
+
+const notificationRouter = require("../routes/notifications");
+app.use("/notifications", notificationRouter);
 
 const fakeRouter = require("../routes/fakes");
 app.use("/fakes", fakeRouter);

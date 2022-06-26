@@ -3,7 +3,7 @@ import Mongoose from "mongoose";
 const notificationsModel = new Mongoose.Schema({
   matches: [
     {
-      type: Mongoose.Schema.Types.Mixed,
+      type: Map,
       default: {
         match_id: {
           type: Mongoose.Schema.Types.ObjectId,
@@ -18,17 +18,24 @@ const notificationsModel = new Mongoose.Schema({
   ],
   messages: [
     {
-      type: Mongoose.Schema.Types.Mixed,
-      default: {
+      type: Map,
+      of: new Mongoose.Schema({
+        seen: Mongoose.Schema.Types.Boolean,
         conversation_id: {
           type: Mongoose.Schema.Types.ObjectId,
           ref: "Message",
         },
-        seen: {
-          type: Mongoose.Schema.Types.Boolean,
-          default: false,
-        },
-      },
+      }),
+      // default: {
+      //   conversation_id: {
+      //     type: Mongoose.Schema.Types.ObjectId,
+      //     ref: "Message",
+      //   },
+      //   seen: {
+      //     type: Mongoose.Schema.Types.Boolean,
+      //     default: false,
+      //   },
+      // },
     },
   ],
   profile_id: {
