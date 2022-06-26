@@ -108,6 +108,12 @@ Add `.env` file :
     $ npm install
    ```
 3. Be sure to complete `.env`
+4. Run project
+&nbsp;
+
+   ```sh
+    $ npm run dev
+   ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 &nbsp;
