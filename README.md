@@ -9,6 +9,9 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 <!-- Badges -->
 
+&nbsp;
+&nbsp;
+
 <!-- Header -->
 <div align="center">
   <a href="#">
@@ -16,6 +19,9 @@
   </a>
 </div>
 <!-- Header -->
+
+&nbsp;
+&nbsp;
 
 # About The Project
 ## Context
