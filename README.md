@@ -12,7 +12,7 @@
 <!-- Header -->
 <div align="center">
   <a href="#">
-    <img src="https://lh3.googleusercontent.com/XbqToK5NxrCrd8C_w3c-Yx_i-rdFv4cIknw7o567d6m5HZhxrLLfJWu-Gpqo8QRql6-yT2bfc4Y7HLKABj8D=w2940-h6360-rw" alt="Logo" width="25%" height="auto">
+    <img src=https://user-images.githubusercontent.com/47782394/175833510-680eed3a-8c63-4952-8839-46964dba434a.png" alt="Logo" width="25%" height="auto">
   </a>
 </div>
 <!-- Header -->
